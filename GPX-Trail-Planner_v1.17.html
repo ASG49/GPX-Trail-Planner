@@ -1,0 +1,1197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GPX Trail Planner v1.17</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2NCA2NCI+CiAgPGNpcmNsZSBjeD0iMzIiIGN5PSIzMiIgcj0iMjciIGZpbGw9IiNmNGYxZTgiIHN0cm9rZT0iIzJmNGEzNyIgc3Ryb2tlLXdpZHRoPSI0Ii8+CiAgPGVsbGlwc2UgY3g9IjMyIiBjeT0iMzIiIHJ4PSIxMiIgcnk9IjI3IiBmaWxsPSJub25lIiBzdHJva2U9IiMyZjRhMzciIHN0cm9rZS13aWR0aD0iMi41Ii8+CiAgPGxpbmUgeDE9IjUuNSIgeTE9IjMyIiB4Mj0iNTguNSIgeTI9IjMyIiBzdHJva2U9IiMyZjRhMzciIHN0cm9rZS13aWR0aD0iMi41Ii8+CiAgPHBhdGggZD0iTSA4IDIwIFEgMzIgMjYgNTYgMjAiIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzJmNGEzNyIgc3Ryb2tlLXdpZHRoPSIxLjgiIG9wYWNpdHk9IjAuNTUiLz4KICA8cGF0aCBkPSJNIDggNDQgUSAzMiAzOCA1NiA0NCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjMmY0YTM3IiBzdHJva2Utd2lkdGg9IjEuOCIgb3BhY2l0eT0iMC41NSIvPgogIDxnIHRyYW5zZm9ybT0icm90YXRlKDQ1IDMyIDMyKSI+CiAgICA8cmVjdCB4PSIyOC41IiB5PSI0IiB3aWR0aD0iNyIgaGVpZ2h0PSI0MiIgcng9IjIiIGZpbGw9IiNjMTcwMWUiIHN0cm9rZT0iIzljNTcxNCIgc3Ryb2tlLXdpZHRoPSIxLjIiLz4KICAgIDxwb2x5Z29uIHBvaW50cz0iMjYsNCAzOCw0IDMyLC00IiBmaWxsPSIjOWM1NzE0Ii8+CiAgICA8cmVjdCB4PSIyOC41IiB5PSI0NiIgd2lkdGg9IjciIGhlaWdodD0iNyIgZmlsbD0iIzJmNGEzNyIvPgogIDwvZz4KPC9zdmc+Cg==" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
+<style>
+  :root{
+    --ink:#1f2a1f;
+    --panel:#f4f1e8;
+    --panel-border:#c9c0a6;
+    --forest:#2f4a37;
+    --forest-dark:#203327;
+    --ochre:#c1701e;
+    --ochre-dark:#9c5714;
+    --tan:#e4dcc5;
+    --danger:#a13b2c;
+    --mono: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+    --sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  }
+  *{box-sizing:border-box;}
+  html,body{height:100%;margin:0;font-family:var(--sans);color:var(--ink);}
+  #app{display:flex;height:100vh;width:100vw;overflow:hidden;}
+
+  #sidebar{
+    width:221px;min-width:221px;background:var(--panel);
+    border-right:2px solid var(--panel-border);
+    display:flex;flex-direction:column;
+    overflow-y:auto;
+  }
+  #sidebar-header{
+    background:var(--forest);color:#fff;padding:14px 16px 12px;
+    border-bottom:3px solid var(--ochre);
+  }
+  #sidebar-header h1{margin:0;font-size:17px;letter-spacing:.3px;font-weight:700;}
+  #sidebar-header .sub{font-size:11px;opacity:.75;margin-top:3px;font-family:var(--mono);}
+
+  .section{padding:12px 16px;border-bottom:1px solid var(--panel-border);}
+  .section h2{
+    font-size:10.5px;text-transform:uppercase;letter-spacing:1px;
+    color:var(--forest);margin:0 0 8px;font-weight:700;
+  }
+
+  label.field{display:block;font-size:11px;color:#555;margin-bottom:3px;}
+  input[type=text]{
+    width:100%;padding:7px 8px;border:1px solid var(--panel-border);
+    border-radius:3px;font-size:13px;font-family:var(--mono);background:#fff;
+  }
+
+  .btn{
+    display:block;width:100%;padding:9px 10px;margin-bottom:7px;
+    border:1px solid var(--forest);border-radius:3px;background:var(--forest);
+    color:#fff;font-size:13px;font-weight:600;cursor:pointer;text-align:center;
+    transition:background .12s, transform .05s;
+  }
+  .btn:hover{background:var(--forest-dark);}
+  .btn:active{transform:scale(.98);}
+  .btn.secondary{background:#fff;color:var(--forest);border:1px solid var(--forest);}
+  .btn.secondary:hover{background:var(--tan);}
+  .btn.danger{background:#fff;color:var(--danger);border:1px solid var(--danger);}
+  .btn.danger:hover{background:#f6e4e0;}
+  .btn.ochre{background:var(--ochre);border-color:var(--ochre);}
+  .btn.ochre:hover{background:var(--ochre-dark);}
+  .btn:disabled{opacity:.45;cursor:not-allowed;}
+  .btn:disabled:hover{background:var(--forest);}
+  .btn.secondary:disabled:hover{background:#fff;}
+
+  #stats{font-family:var(--mono);font-size:12.5px;line-height:1.9;}
+  #stats span.val{float:right;font-weight:700;color:var(--forest);}
+
+  #pointlist{
+    flex:1;overflow-y:auto;padding:6px 16px 16px;
+  }
+  #pointlist h2{
+    font-size:10.5px;text-transform:uppercase;letter-spacing:1px;
+    color:var(--forest);margin:8px 0 6px;font-weight:700;
+  }
+  .pt-row{
+    display:flex;align-items:center;gap:8px;font-family:var(--mono);
+    font-size:11.5px;padding:5px 6px;border-radius:3px;cursor:pointer;
+  }
+  .pt-row:hover{background:var(--tan);}
+  .pt-row .idx{
+    width:20px;height:20px;border-radius:50%;background:var(--ochre);color:#fff;
+    display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;
+    flex-shrink:0;
+  }
+  .pt-row .coords{flex:1;color:#333;}
+  .pt-row .ele{color:#888;}
+  .empty-hint{
+    font-size:12px;color:#8a8370;padding:10px 6px;font-style:italic;line-height:1.5;
+  }
+
+  #status-bar{
+    padding:9px 16px;font-size:11.5px;font-family:var(--mono);
+    background:var(--tan);border-top:1px solid var(--panel-border);
+    min-height:34px;
+  }
+  #status-bar.error{background:#f6e4e0;color:var(--danger);}
+  #status-bar.ok{background:#e2ead9;color:var(--forest);}
+
+  #map{flex:1;height:100%;}
+
+  /* Crosshair for high-precision actions: placing/inserting a point and
+     hovering a marker to move it. This rule has the same specificity as
+     Leaflet's own .leaflet-grab{cursor:grab}, but being declared later it
+     wins at rest -- so idle map = crosshair (ready to click and place a
+     point). The .leaflet-dragging override below restores the normal
+     hand/grabbing cursor while actively panning. */
+  .leaflet-container,
+  .leaflet-interactive,
+  .leaflet-marker-icon,
+  .leaflet-marker-draggable{
+    cursor:crosshair;
+  }
+  /* While actively click-dragging the empty map to pan, use the familiar
+     grabbing hand instead of the crosshair. */
+  .leaflet-container.leaflet-dragging{
+    cursor:grabbing !important;
+  }
+
+  /* numbered marker — diameter is 2/3 of the original 24px */
+  .num-marker{
+    background:var(--ochre);color:#fff;border-radius:50%;
+    width:16px;height:16px;display:flex;align-items:center;justify-content:center;
+    font-size:9px;font-weight:700;font-family:var(--sans);
+    border:2px solid #fff;box-shadow:0 1px 3px rgba(0,0,0,.4);
+  }
+  .num-marker.start{background:var(--forest);}
+  .num-marker.end{background:var(--danger);}
+
+  #search-box{
+    position:absolute;top:10px;left:233px;z-index:1000;
+    display:flex;gap:0;box-shadow:0 1px 5px rgba(0,0,0,.4);border-radius:4px;overflow:hidden;
+  }
+  #search-input{
+    border:none;padding:8px 10px;font-size:13px;width:240px;font-family:var(--sans);
+  }
+  #search-btn{
+    border:none;background:var(--forest);color:#fff;padding:8px 12px;cursor:pointer;font-size:13px;
+  }
+  #search-btn:hover{background:var(--forest-dark);}
+
+  /* Pull the Leaflet zoom control out from the map corner and tuck it
+     just under the search box, left-aligned with it, for a tidier look. */
+  .leaflet-control-zoom{
+    margin-top:54px !important;
+    margin-left:12px !important;
+  }
+
+  /* Round "center on my location" button, stacked directly under zoom */
+  .locate-control{
+    margin-top:8px !important;
+    margin-left:12px !important;
+  }
+  .locate-btn{
+    width:34px;height:34px;border-radius:50%;
+    background:#fff;border:1px solid var(--panel-border);
+    display:flex;align-items:center;justify-content:center;
+    box-shadow:0 1px 5px rgba(0,0,0,.4);
+    cursor:pointer;
+  }
+  .locate-btn:hover{background:var(--tan);}
+  .locate-btn svg{width:18px;height:18px;display:block;}
+
+  #basemap-box{
+    position:absolute;top:10px;right:10px;z-index:1000;
+    box-shadow:0 1px 5px rgba(0,0,0,.4);border-radius:4px;overflow:hidden;
+  }
+  #basemap-select{
+    border:none;background:var(--forest);color:#fff;padding:8px 10px;
+    font-size:13px;font-family:var(--sans);font-weight:600;cursor:pointer;
+    -webkit-appearance:none;appearance:none;
+    background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='white'><path d='M7 10l5 5 5-5z'/></svg>");
+    background-repeat:no-repeat;background-position:right 8px center;background-size:16px;
+    padding-right:28px;
+  }
+  #basemap-select:hover{background-color:var(--forest-dark);}
+  #basemap-select option{background:#fff;color:var(--ink);}
+
+  #footer-version{
+    position:absolute;top:54px;right:10px;z-index:1000;
+    font-family:var(--mono);font-size:10px;color:#666;
+    background:rgba(255,255,255,.85);padding:2px 6px;border-radius:3px;
+  }
+
+  /* Semi-transparent altitude-vs-distance profile, bottom-right of the
+     map -- same corner OpenTopoMap's own elevation chart uses. */
+  #elev-chart-panel{
+    position:absolute;bottom:22px;right:10px;z-index:1000;
+    width:499px;max-width:calc(100vw - 20px);height:254px;
+    background:rgba(244,241,232,0.40);
+    border:1px solid var(--panel-border);border-radius:4px;
+    box-shadow:0 1px 5px rgba(0,0,0,.35);
+    padding:4px 4px 2px;
+    display:none;
+  }
+  #elev-chart-svg-wrap{width:100%;height:100%;}
+  #elev-chart-svg-wrap svg{display:block;width:100%;height:100%;}
+  .ele-dot{cursor:pointer;}
+
+  /* Fully-opaque state for busy map areas -- toggled by the round button */
+  #elev-chart-panel.chart-opaque{ background:rgba(244,241,232,1); }
+
+  .chart-opacity-toggle{
+    position:absolute;top:3px;left:50%;transform:translateX(-50%);
+    width:20px;height:20px;border-radius:50%;
+    border:1.5px solid #1a1a1a;background:#fff;
+    padding:0;cursor:pointer;z-index:1001;
+    box-shadow:0 1px 3px rgba(0,0,0,.4);
+  }
+  .chart-opacity-toggle.on{ background:#1a1a1a;border-color:#fff; }
+
+  @media (max-width:640px){
+    #sidebar{width:100vw;min-width:0;position:absolute;z-index:2000;height:45%;}
+    #map{position:absolute;top:45%;height:55%;width:100%;}
+    #search-box{left:10px;top:10px;}
+    #basemap-box{top:56px;right:10px;}
+    #footer-version{top:98px;right:10px;}
+  }
+</style>
+</head>
+<body>
+<div id="app">
+  <div id="sidebar">
+    <div id="sidebar-header">
+      <h1>GPX Trail Planner</h1>
+      <div class="sub">click-to-build route &middot; v1.17</div>
+    </div>
+
+    <div class="section">
+      <h2>Track</h2>
+      <label class="field">Track name</label>
+      <input type="text" id="track-name" value="">
+    </div>
+
+    <div class="section">
+      <h2>Stats</h2>
+      <div id="stats">
+        Points: <span class="val" id="stat-points">0</span><br>
+        Distance: <span class="val" id="stat-dist">0.00 mi / 0.00 km</span><br>
+        Elevations: <span class="val" id="stat-ele">not fetched</span>
+      </div>
+    </div>
+
+    <div class="section">
+      <button class="btn secondary" id="btn-undo" disabled>Undo Last Point</button>
+      <button class="btn danger" id="btn-clear" disabled>Clear All Points</button>
+      <button class="btn secondary" id="btn-elev" disabled>Fetch Elevations</button>
+      <button class="btn ochre" id="btn-save" disabled>Save GPX File</button>
+    </div>
+
+    <div id="pointlist">
+      <h2>Points (click point on map to add, click a row to remove)</h2>
+      <div class="empty-hint" id="empty-hint">Click anywhere on the map to place your first point. Each click adds the next sequential point on the trail. Once you have a line, click on it to insert a new point there.</div>
+      <div id="pt-rows"></div>
+    </div>
+
+    <div id="status-bar">Ready. Click the map to start plotting a trail.</div>
+  </div>
+
+  <div id="map"></div>
+  <div id="search-box">
+    <input type="text" id="search-input" placeholder="Jump to place or address...">
+    <button id="search-btn">Go</button>
+  </div>
+  <div id="basemap-box">
+    <select id="basemap-select">
+      <option value="opentopo" selected>OpenTopoMap</option>
+      <option value="osm">OpenStreetMap</option>
+      <option value="gsat">Google Satellite</option>
+      <option value="gterrain">Google Terrain</option>
+    </select>
+  </div>
+  <div id="elev-chart-panel">
+    <button id="chart-opacity-toggle" class="chart-opacity-toggle" title="Toggle solid background"></button>
+    <div id="elev-chart-svg-wrap"></div>
+  </div>
+  <div id="footer-version">GPX Trail Planner v1.17</div>
+</div>
+
+<script>
+// ============================================================
+// GPX Trail Planner
+// Version: 1.17
+// Built: 2026-08-04 15:06 EDT
+//
+// Changelog:
+//   v1.17 (2026-08-04) - Added a small round black/white toggle button,
+//                        centered horizontally and sitting just above the
+//                        chart's top gridline. Click to switch the panel
+//                        background to fully opaque (0% transparency) for
+//                        reading it over busy map areas; click again to
+//                        return to the default semi-transparent look.
+//   v1.16 (2026-08-04) - Added a round "center on my location" button
+//                        directly under the zoom control. The map now
+//                        also tries to center on the user's current
+//                        location automatically when it opens, instead
+//                        of always defaulting to the same White Mountains
+//                        fallback view (which is kept only if geolocation
+//                        is denied or unavailable).
+//   v1.15 (2026-08-04) - Added solid dots at each altitude point on the
+//                        elevation curve (~2.7x the line width). Added
+//                        two-way map<->chart hover linkage: hovering a
+//                        map marker draws a thin red vertical line on the
+//                        chart at that point's distance; hovering an
+//                        altitude dot on the chart shows a slanted red
+//                        arrow pointing at the corresponding point on
+//                        the map.
+//   v1.14 (2026-08-04) - Fixed spurious extreme slope-% spikes: slope is
+//                        now computed by looking ahead until a segment
+//                        covers at least 75m of real distance instead of
+//                        using raw point-to-point pairs, which amplified
+//                        SRTM's ~90m elevation-grid noise into fake
+//                        50-100%+ "cliffs" wherever points were placed
+//                        closer together than that.
+//   v1.13 (2026-08-04) - Brought the elevation panel back down closer to
+//                        the bottom (offset 34px -> 22px, still clearing
+//                        Leaflet's attribution bar) to stop wasting map
+//                        space; narrowed the Y1/Y2 axis margins (left
+//                        48->34, right 46->32) so the tick labels sit
+//                        closer to the panel border.
+//   v1.12 (2026-08-04) - Raised the elevation panel (bottom offset 10px
+//                        -> 34px) so it clears Leaflet's own bottom
+//                        attribution bar instead of covering it; narrowed
+//                        the panel 20% (624px -> 499px wide).
+//   v1.11 (2026-08-04) - Moved the "GPX Trail Planner vX.X" footer tag
+//                        from bottom-left to top-right (just under the
+//                        basemap dropdown) so it can never sit under the
+//                        elevation panel, which now reaches far enough
+//                        left on narrower windows to have covered it.
+//   v1.10 (2026-08-04) - Elevation panel enlarged again (416x169 ->
+//                        624x254) and made more transparent (background
+//                        alpha 0.72 -> 0.40, area fill 0.45 -> 0.32);
+//                        added light-blue dashed gridlines for the Y2
+//                        slope-% axis; both the elevation curve and the
+//                        slope line now use a Catmull-Rom cubic spline
+//                        (interpolates exactly through every point)
+//                        instead of straight polyline segments.
+//   v1.9 (2026-08-04) - Added a secondary Y2 axis (right side, steel
+//                        blue) for slope in %, with a dashed connecting
+//                        line plotted at the mid-distance of each
+//                        consecutive point pair. Slope domain always
+//                        includes 0% as a reference. Widened the chart's
+//                        right margin to fit the new axis labels.
+//   v1.8 (2026-08-04) - Elevation profile panel enlarged 30% (320x130 ->
+//                        416x169). Both axes now use a "nice" rounded
+//                        domain so the origin and far end of each axis
+//                        land on clean round numbers, and the unit label
+//                        ("m" / "km") sits right at that far end instead
+//                        of floating separately.
+//   v1.7 (2026-08-04) - Added a semi-transparent altitude-vs-distance
+//                        profile panel, bottom-right of the map (same
+//                        corner OpenTopoMap uses for its own elevation
+//                        chart). Rendered as inline SVG, no chart library;
+//                        redraws automatically as points/altitude change.
+//   v1.6 (2026-08-03) - Panning the map (click-dragging empty space) now
+//                        shows the normal grab/grabbing hand cursor again;
+//                        the crosshair is reserved for placing a new
+//                        point, inserting a point on the line, and
+//                        hovering/moving an existing marker.
+//   v1.5 (2026-08-02) - Added a browser-tab favicon: an inline SVG (data
+//                        URI, no external file) of a pen crossing a globe.
+//   v1.4 (2026-08-02) - Trail line weight and marker circle diameter both
+//                        reduced to 2/3 of their original size (line
+//                        4px->2.67px, markers 24px->16px, font scaled to
+//                        match); map cursor changed from the default
+//                        hand/pointer to a crosshair over the map,
+//                        markers, and trail line.
+//   v1.3 (2026-08-02) - New points now fetch their altitude automatically
+//                        (no need to press Fetch Elevations first); zoom
+//                        control moved to just under the search box,
+//                        left-aligned with it, instead of sitting at the
+//                        bottom-left corner.
+//   v1.2 (2026-08-02) - Moved zoom control to bottom-left so it no longer
+//                        hides behind the search box; halved the zoom step
+//                        size (zoomSnap/zoomDelta 0.5); narrowed the left
+//                        data panel to 65% of its former width; clicking
+//                        on the trail line now inserts a new point there.
+//   v1.1 (2026-08-02) - Replaced Google Streets/Hybrid with Google Terrain;
+//                        moved basemap selector from sidebar radios to a
+//                        dropdown menu in the top-right of the map.
+//   v1.0 (2026-08-02) - Initial release.
+// ============================================================
+
+const points = []; // {lat, lon, ele, marker}
+let polyline = null;
+let polylineHit = null;
+let map = null;
+let currentLayer = null;
+let chartScale = null;        // current chart's {xPix, yPix, top, baseline} -- null while hidden
+let pointDistancesKm = [];    // cumulative distance to each point, parallel to `points`
+let hoverArrowMarker = null;  // the on-map arrow shown when hovering a chart altitude dot
+
+const layers = {
+  opentopo: L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', {
+    maxZoom: 17,
+    attribution: 'Map data: &copy; OpenStreetMap contributors, SRTM | Map style: &copy; OpenTopoMap (CC-BY-SA)'
+  }),
+  osm: L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    maxZoom: 19,
+    attribution: '&copy; OpenStreetMap contributors'
+  }),
+  gsat: L.tileLayer('https://mt1.google.com/vt/lyrs=s&x={x}&y={y}&z={z}', {
+    maxZoom: 20,
+    attribution: '&copy; Google'
+  }),
+  gterrain: L.tileLayer('https://mt1.google.com/vt/lyrs=p&x={x}&y={y}&z={z}', {
+    maxZoom: 20,
+    attribution: '&copy; Google'
+  })
+};
+
+// Round "center on my location" button, added as a genuine Leaflet
+// control so it naturally stacks directly under the zoom control.
+const LocateControl = L.Control.extend({
+  options: { position: 'topleft' },
+  onAdd: function(){
+    const container = L.DomUtil.create('div', 'locate-control');
+    const btn = L.DomUtil.create('a', 'locate-btn', container);
+    btn.href = '#';
+    btn.title = 'Center on my location';
+    btn.innerHTML =
+      '<svg viewBox="0 0 24 24" fill="none" stroke="#2f4a37" stroke-width="2" stroke-linecap="round">' +
+        '<circle cx="12" cy="12" r="3" fill="#2f4a37" stroke="none"/>' +
+        '<circle cx="12" cy="12" r="8"/>' +
+        '<line x1="12" y1="1" x2="12" y2="4"/>' +
+        '<line x1="12" y1="20" x2="12" y2="23"/>' +
+        '<line x1="1" y1="12" x2="4" y2="12"/>' +
+        '<line x1="20" y1="12" x2="23" y2="12"/>' +
+      '</svg>';
+    L.DomEvent.disableClickPropagation(container);
+    L.DomEvent.on(btn, 'click', function(e){
+      L.DomEvent.preventDefault(e);
+      centerOnCurrentLocation();
+    });
+    return container;
+  }
+});
+
+function centerOnCurrentLocation(){
+  if (!navigator.geolocation){
+    setStatus('Geolocation is not supported by this browser.', 'error');
+    return;
+  }
+  setStatus('Locating...', '');
+  navigator.geolocation.getCurrentPosition(function(pos){
+    map.setView([pos.coords.latitude, pos.coords.longitude], 13);
+    setStatus('Centered on your current location.', 'ok');
+  }, function(err){
+    console.warn('Geolocation failed:', err);
+    setStatus('Could not get your location (permission denied or unavailable).', 'error');
+  }, { enableHighAccuracy: true, timeout: 10000 });
+}
+
+function initMap(){
+  map = L.map('map', {
+    zoomControl: false,
+    zoomSnap: 0.5,
+    zoomDelta: 0.5
+  }).setView([44.15, -71.66], 13); // fallback view until/unless geolocation resolves
+  L.control.zoom({ position: 'topleft' }).addTo(map);
+  new LocateControl().addTo(map);
+  currentLayer = layers.opentopo;
+  currentLayer.addTo(map);
+
+  // On open, try to center on the user's current location instead of
+  // always defaulting to the same fallback region. Silently keeps the
+  // fallback view if permission is denied or geolocation is unavailable.
+  if (navigator.geolocation){
+    navigator.geolocation.getCurrentPosition(function(pos){
+      map.setView([pos.coords.latitude, pos.coords.longitude], 13);
+    }, function(err){
+      console.warn('Initial geolocation unavailable, staying on default view:', err);
+    }, { enableHighAccuracy: true, timeout: 8000 });
+  }
+
+  map.on('click', function(e){
+    addPoint(e.latlng.lat, e.latlng.lng);
+  });
+
+  document.getElementById('basemap-select').addEventListener('change', function(){
+    if (currentLayer) map.removeLayer(currentLayer);
+    currentLayer = layers[this.value];
+    currentLayer.addTo(map);
+  });
+}
+
+function numberedIcon(idx, total){
+  let cls = 'num-marker';
+  if (idx === 0) cls += ' start';
+  else if (idx === total - 1) cls += ' end';
+  return L.divIcon({
+    className: '',
+    html: '<div class="' + cls + '">' + (idx + 1) + '</div>',
+    iconSize: [16,16],
+    iconAnchor: [8,8]
+  });
+}
+
+// Auto-fetch altitude for a single newly created point. Fire-and-forget:
+// updates the point list and stats in place once the lookup resolves.
+// Same source order as the batch fetchElevations(): Open-Elevation first,
+// Open-Topo-Data SRTM90m as fallback.
+async function fetchElevationForPoint(pt){
+  try {
+    const resp = await fetch('https://api.open-elevation.com/api/v1/lookup', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ locations: [{ latitude: pt.lat, longitude: pt.lon }] })
+    });
+    if (!resp.ok) throw new Error('open-elevation HTTP ' + resp.status);
+    const data = await resp.json();
+    if (data.results && data.results[0]){
+      pt.ele = data.results[0].elevation;
+      renderPointList();
+      updateStats();
+      return true;
+    }
+    throw new Error('no result');
+  } catch (err) {
+    console.warn('Auto elevation lookup failed, trying fallback:', err);
+  }
+
+  try {
+    const locStr = pt.lat.toFixed(6) + ',' + pt.lon.toFixed(6);
+    const resp2 = await fetch('https://api.opentopodata.org/v1/srtm90m?locations=' + encodeURIComponent(locStr));
+    if (!resp2.ok) throw new Error('opentopodata HTTP ' + resp2.status);
+    const data2 = await resp2.json();
+    if (data2.results && data2.results[0]){
+      pt.ele = data2.results[0].elevation;
+      renderPointList();
+      updateStats();
+      return true;
+    }
+  } catch (err2) {
+    console.warn('Auto elevation fallback also failed (point stays unset until manual fetch):', err2);
+  }
+  return false;
+}
+
+// --- Map <-> chart hover linkage ---
+function showChartHoverLine(idx){
+  if (!chartScale || idx < 0 || idx >= pointDistancesKm.length) return;
+  const svgEl = document.querySelector('#elev-chart-svg-wrap svg');
+  if (!svgEl) return;
+  const line = svgEl.querySelector('#chart-hover-line');
+  if (!line) return;
+  const x = chartScale.xPix(pointDistancesKm[idx]).toFixed(1);
+  line.setAttribute('x1', x);
+  line.setAttribute('x2', x);
+  line.setAttribute('opacity', '1');
+}
+
+function hideChartHoverLine(){
+  const svgEl = document.querySelector('#elev-chart-svg-wrap svg');
+  if (!svgEl) return;
+  const line = svgEl.querySelector('#chart-hover-line');
+  if (line) line.setAttribute('opacity', '0');
+}
+
+function showMapHoverArrow(idx){
+  if (idx < 0 || idx >= points.length || !map) return;
+  const pt = points[idx];
+  const icon = L.divIcon({
+    className: '',
+    html: '<svg width="34" height="34" viewBox="0 0 34 34">' +
+            '<line x1="30" y1="4" x2="10" y2="24" stroke="#d32f2f" stroke-width="3" stroke-linecap="round"/>' +
+            '<polygon points="10,24 18,21 15,15" fill="#d32f2f"/>' +
+          '</svg>',
+    iconSize: [34, 34],
+    iconAnchor: [10, 24]
+  });
+  if (!hoverArrowMarker){
+    hoverArrowMarker = L.marker([pt.lat, pt.lon], { icon: icon, interactive: false, zIndexOffset: 2000 }).addTo(map);
+  } else {
+    hoverArrowMarker.setIcon(icon);
+    hoverArrowMarker.setLatLng([pt.lat, pt.lon]);
+  }
+}
+
+function hideMapHoverArrow(){
+  if (hoverArrowMarker){
+    map.removeLayer(hoverArrowMarker);
+    hoverArrowMarker = null;
+  }
+}
+
+function bindMarkerEvents(marker, pt){
+  marker.on('dragend', function(){
+    const ll = marker.getLatLng();
+    pt.lat = ll.lat; pt.lon = ll.lng;
+    pt.ele = null; // position changed, elevation is stale
+    redrawLine();
+    renderPointList();
+    updateStats();
+  });
+
+  marker.on('click', function(e){
+    L.DomEvent.stopPropagation(e);
+    const idx = points.indexOf(pt);
+    if (idx === -1) return;
+    if (confirm('Remove point ' + (idx + 1) + '?')){
+      removePoint(idx);
+    }
+  });
+
+  marker.on('mouseover', function(){
+    const idx = points.indexOf(pt);
+    if (idx !== -1) showChartHoverLine(idx);
+  });
+  marker.on('mouseout', hideChartHoverLine);
+}
+
+function insertPointAt(idx, lat, lon){
+  const pt = { lat: lat, lon: lon, ele: null, marker: null };
+  points.splice(idx, 0, pt);
+
+  const marker = L.marker([lat, lon], {
+    icon: numberedIcon(idx, points.length),
+    draggable: true
+  }).addTo(map);
+  bindMarkerEvents(marker, pt);
+  pt.marker = marker;
+
+  redrawLine();
+  renumberMarkers();
+  renderPointList();
+  updateStats();
+  fetchElevationForPoint(pt); // async — fills in altitude as soon as it resolves
+}
+
+function addPoint(lat, lon){
+  insertPointAt(points.length, lat, lon);
+  setStatus('Added point ' + points.length + '. Click the map to continue, click a marker to remove it, or click the trail line to insert a point.', 'ok');
+}
+
+function removePoint(idx){
+  if (idx < 0 || idx >= points.length) return;
+  map.removeLayer(points[idx].marker);
+  points.splice(idx, 1);
+  renumberMarkers();
+  redrawLine();
+  renderPointList();
+  updateStats();
+  setStatus('Point removed. ' + points.length + ' point(s) remaining.', 'ok');
+}
+
+function renumberMarkers(){
+  points.forEach(function(pt, i){
+    pt.marker.setIcon(numberedIcon(i, points.length));
+  });
+}
+
+function redrawLine(){
+  if (polyline) map.removeLayer(polyline);
+  if (polylineHit) map.removeLayer(polylineHit);
+  if (points.length < 2) { polyline = null; polylineHit = null; return; }
+
+  const latlngs = points.map(function(p){ return [p.lat, p.lon]; });
+
+  polyline = L.polyline(latlngs, { color: '#c1701e', weight: 2.67, opacity: 0.85 }).addTo(map);
+
+  // Wider, invisible line stacked on top to make clicking-to-insert easier
+  // without changing the visible trail's appearance.
+  polylineHit = L.polyline(latlngs, { color: '#000', weight: 18, opacity: 0 }).addTo(map);
+  polylineHit.on('click', function(e){
+    L.DomEvent.stopPropagation(e);
+    const segIdx = findNearestSegmentIndex(e.latlng);
+    insertPointAt(segIdx + 1, e.latlng.lat, e.latlng.lng);
+    setStatus('Inserted a new point on the trail line.', 'ok');
+  });
+}
+
+function pointToSegmentDistance(p, a, b){
+  const dx = b.x - a.x, dy = b.y - a.y;
+  const lengthSq = dx*dx + dy*dy;
+  if (lengthSq === 0) return Math.hypot(p.x - a.x, p.y - a.y);
+  let t = ((p.x - a.x)*dx + (p.y - a.y)*dy) / lengthSq;
+  t = Math.max(0, Math.min(1, t));
+  const projX = a.x + t*dx, projY = a.y + t*dy;
+  return Math.hypot(p.x - projX, p.y - projY);
+}
+
+function findNearestSegmentIndex(latlng){
+  const clickPt = map.latLngToLayerPoint(latlng);
+  let bestIdx = 0;
+  let bestDist = Infinity;
+  for (let i = 0; i < points.length - 1; i++){
+    const a = map.latLngToLayerPoint([points[i].lat, points[i].lon]);
+    const b = map.latLngToLayerPoint([points[i+1].lat, points[i+1].lon]);
+    const d = pointToSegmentDistance(clickPt, a, b);
+    if (d < bestDist){ bestDist = d; bestIdx = i; }
+  }
+  return bestIdx; // segment lies between points[bestIdx] and points[bestIdx+1]
+}
+
+function renderPointList(){
+  const container = document.getElementById('pt-rows');
+  const hint = document.getElementById('empty-hint');
+  container.innerHTML = '';
+  hint.style.display = points.length === 0 ? 'block' : 'none';
+
+  points.forEach(function(p, i){
+    const row = document.createElement('div');
+    row.className = 'pt-row';
+    const eleTxt = p.ele === null ? '--' : p.ele.toFixed(0) + 'm';
+    row.innerHTML =
+      '<div class="idx">' + (i+1) + '</div>' +
+      '<div class="coords">' + p.lat.toFixed(6) + ', ' + p.lon.toFixed(6) + '</div>' +
+      '<div class="ele">' + eleTxt + '</div>';
+    row.addEventListener('click', function(){
+      if (confirm('Remove point ' + (i+1) + '?')){
+        removePoint(i);
+      }
+    });
+    container.appendChild(row);
+  });
+}
+
+function haversine(lat1, lon1, lat2, lon2){
+  const R = 6371000; // meters
+  const toRad = function(d){ return d * Math.PI / 180; };
+  const dLat = toRad(lat2 - lat1);
+  const dLon = toRad(lon2 - lon1);
+  const a = Math.sin(dLat/2)*Math.sin(dLat/2) +
+            Math.cos(toRad(lat1))*Math.cos(toRad(lat2)) *
+            Math.sin(dLon/2)*Math.sin(dLon/2);
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+  return R * c;
+}
+
+function totalDistanceMeters(){
+  let d = 0;
+  for (let i = 1; i < points.length; i++){
+    d += haversine(points[i-1].lat, points[i-1].lon, points[i].lat, points[i].lon);
+  }
+  return d;
+}
+
+// --- Altitude vs distance profile (semi-transparent overlay panel) ---
+const ELEV_CHART_W = 499;
+const ELEV_CHART_H = 254;
+const ELEV_MARGIN = { left: 34, right: 32, top: 18, bottom: 30 };
+
+function buildElevationProfile(){
+  let cum = 0;
+  const profile = [];
+  for (let i = 0; i < points.length; i++){
+    if (i > 0){
+      cum += haversine(points[i-1].lat, points[i-1].lon, points[i].lat, points[i].lon);
+    }
+    if (points[i].ele !== null && points[i].ele !== undefined){
+      profile.push({ distKm: cum / 1000, ele: points[i].ele, idx: i });
+    }
+  }
+  return profile;
+}
+
+// Cumulative distance (km) to every point, regardless of whether its
+// altitude has resolved yet -- used to place the map-hover chart line.
+function computePointDistancesKm(){
+  const arr = [];
+  let cum = 0;
+  for (let i = 0; i < points.length; i++){
+    if (i > 0){
+      cum += haversine(points[i-1].lat, points[i-1].lon, points[i].lat, points[i].lon);
+    }
+    arr.push(cum / 1000);
+  }
+  return arr;
+}
+
+// Slope % at the mid-distance of each merged segment. Rather than using
+// raw consecutive point pairs, this looks ahead until the horizontal
+// span covers at least MIN_RUN_M. Altitude lookups only resolve to
+// roughly a 90m grid (SRTM), so two points closer together than that can
+// land in the same or an adjacent grid cell -- dividing that grid noise
+// by a tiny run distance produces spurious 50-100%+ "cliffs" that aren't
+// real. Requiring a minimum run smooths that out while still capturing
+// genuinely steep, sustained sections.
+function buildSlopeProfile(profile){
+  const MIN_RUN_M = 75;
+  const slopes = [];
+  let i = 0;
+  while (i < profile.length - 1){
+    let j = i + 1;
+    while (j < profile.length - 1 && (profile[j].distKm - profile[i].distKm) * 1000 < MIN_RUN_M){
+      j++;
+    }
+    const runM = (profile[j].distKm - profile[i].distKm) * 1000;
+    const riseM = profile[j].ele - profile[i].ele;
+    const pct = runM > 0 ? (riseM / runM) * 100 : 0;
+    slopes.push({ distKm: (profile[i].distKm + profile[j].distKm) / 2, slope: pct });
+    i = j;
+  }
+  return slopes;
+}
+
+function niceStep(range, targetTicks){
+  if (!range || range <= 0) return 1;
+  const rawStep = range / targetTicks;
+  const mag = Math.pow(10, Math.floor(Math.log10(rawStep)));
+  const norm = rawStep / mag;
+  let step;
+  if (norm < 1.5) step = 1 * mag;
+  else if (norm < 3) step = 2 * mag;
+  else if (norm < 7) step = 5 * mag;
+  else step = 10 * mag;
+  return step;
+}
+
+// Catmull-Rom to cubic-Bezier conversion: an interpolating cubic spline
+// that passes exactly through every point (unlike an approximating curve
+// fit). pts is an array of [x,y] pixel coordinates. Returns an SVG path
+// "d" string starting with M.
+function catmullRomPath(pts){
+  if (pts.length < 2) return '';
+  if (pts.length === 2){
+    return 'M' + pts[0][0].toFixed(1) + ',' + pts[0][1].toFixed(1) +
+           ' L' + pts[1][0].toFixed(1) + ',' + pts[1][1].toFixed(1);
+  }
+  let d = 'M' + pts[0][0].toFixed(1) + ',' + pts[0][1].toFixed(1) + ' ';
+  for (let i = 0; i < pts.length - 1; i++){
+    const p0 = pts[i === 0 ? i : i - 1];
+    const p1 = pts[i];
+    const p2 = pts[i + 1];
+    const p3 = pts[i + 2 < pts.length ? i + 2 : i + 1];
+    const c1x = p1[0] + (p2[0] - p0[0]) / 6;
+    const c1y = p1[1] + (p2[1] - p0[1]) / 6;
+    const c2x = p2[0] - (p3[0] - p1[0]) / 6;
+    const c2y = p2[1] - (p3[1] - p1[1]) / 6;
+    d += 'C' + c1x.toFixed(1) + ',' + c1y.toFixed(1) + ' ' + c2x.toFixed(1) + ',' + c2y.toFixed(1) +
+         ' ' + p2[0].toFixed(1) + ',' + p2[1].toFixed(1) + ' ';
+  }
+  return d.trim();
+}
+
+function updateElevationChart(){
+  const panel = document.getElementById('elev-chart-panel');
+  const wrap = document.getElementById('elev-chart-svg-wrap');
+  const profile = buildElevationProfile();
+  pointDistancesKm = computePointDistancesKm();
+
+  if (profile.length < 2){
+    panel.style.display = 'none';
+    wrap.innerHTML = '';
+    chartScale = null;
+    return;
+  }
+  panel.style.display = 'block';
+
+  const rawMaxDist = profile[profile.length - 1].distKm;
+  const eleVals = profile.map(function(p){ return p.ele; });
+  const rawMinEle = Math.min.apply(null, eleVals);
+  const rawMaxEle = Math.max.apply(null, eleVals);
+
+  // "Nice" axis domains: both ends (the origin and the far end) land on
+  // clean round numbers, e.g. 400-1600m by 200s, or 0-50km by 10s --
+  // matching how printed topo elevation profiles round their axes.
+  const eleStep = niceStep(Math.max(rawMaxEle - rawMinEle, 10), 3);
+  const minEle = Math.floor(rawMinEle / eleStep) * eleStep;
+  const maxEle = Math.ceil(rawMaxEle / eleStep) * eleStep;
+  const eleRange = Math.max(maxEle - minEle, eleStep);
+
+  const distStep = niceStep(Math.max(rawMaxDist, 0.01), 4);
+  const maxDist = Math.max(Math.ceil(rawMaxDist / distStep) * distStep, distStep);
+  const distRange = maxDist;
+
+  const slopeProfile = buildSlopeProfile(profile);
+  const slopeVals = slopeProfile.map(function(p){ return p.slope; });
+  const rawMinSlope = slopeVals.length ? Math.min.apply(null, slopeVals) : 0;
+  const rawMaxSlope = slopeVals.length ? Math.max.apply(null, slopeVals) : 0;
+  const slopeStep = niceStep(Math.max(rawMaxSlope - rawMinSlope, 4), 3);
+  // Slope domain always includes 0% (flat ground) as a reference line.
+  const minSlope = Math.min(0, Math.floor(rawMinSlope / slopeStep) * slopeStep);
+  const maxSlope = Math.max(0, Math.ceil(rawMaxSlope / slopeStep) * slopeStep);
+  const slopeRange = Math.max(maxSlope - minSlope, slopeStep);
+
+  const plotW = ELEV_CHART_W - ELEV_MARGIN.left - ELEV_MARGIN.right;
+  const plotH = ELEV_CHART_H - ELEV_MARGIN.top - ELEV_MARGIN.bottom;
+  const baseline = ELEV_MARGIN.top + plotH;
+
+  function xPix(d){ return ELEV_MARGIN.left + (d / distRange) * plotW; }
+  function yPix(e){ return ELEV_MARGIN.top + plotH - ((e - minEle) / eleRange) * plotH; }
+  function y2Pix(s){ return ELEV_MARGIN.top + plotH - ((s - minSlope) / slopeRange) * plotH; }
+
+  // Elevation curve: cubic spline through every profile point
+  const profilePix = profile.map(function(p){ return [xPix(p.distKm), yPix(p.ele)]; });
+  const lineD = catmullRomPath(profilePix);
+  const lastX = profilePix[profilePix.length - 1][0];
+  const firstX = profilePix[0][0];
+  const areaD = lineD + ' L' + lastX.toFixed(1) + ',' + baseline.toFixed(1) +
+                ' L' + firstX.toFixed(1) + ',' + baseline.toFixed(1) + ' Z';
+
+  // Solid dot at each actual altitude point (~2.7x the 2.2px line width),
+  // hoverable: hovering one shows a red arrow at that point on the map.
+  let eleDotsSvg = '';
+  profile.forEach(function(p, k){
+    eleDotsSvg += '<circle class="ele-dot" data-idx="' + p.idx + '" cx="' + profilePix[k][0].toFixed(1) +
+      '" cy="' + profilePix[k][1].toFixed(1) + '" r="3" fill="#9c5714"/>';
+  });
+
+  // Y-axis (elevation, left): a tick at every step from the rounded
+  // origin (bottom) to the rounded top -- both ends land on round numbers.
+  const yTicks = [];
+  for (let v = minEle; v <= maxEle + 0.001; v += eleStep){
+    yTicks.push(v);
+  }
+
+  let gridSvg = '';
+  yTicks.forEach(function(tv){
+    const y = yPix(tv);
+    gridSvg += '<line x1="' + ELEV_MARGIN.left + '" y1="' + y.toFixed(1) + '" x2="' +
+      (ELEV_CHART_W - ELEV_MARGIN.right) + '" y2="' + y.toFixed(1) + '" stroke="#2f4a3730" stroke-width="1"/>';
+    gridSvg += '<text x="' + (ELEV_MARGIN.left - 6) + '" y="' + (y + 4).toFixed(1) +
+      '" text-anchor="end" font-size="12" fill="#2f4a37" font-family="monospace">' + Math.round(tv) + '</text>';
+  });
+  // Unit label at the far (top) end of the elevation axis
+  const mUnitY = yPix(maxEle) - 6;
+  gridSvg += '<text x="' + (ELEV_MARGIN.left - 6) + '" y="' + mUnitY.toFixed(1) +
+    '" text-anchor="end" font-size="12" fill="#2f4a37" font-family="monospace" font-weight="bold">m</text>';
+
+  // Y2-axis (slope %, right): its own light-blue dashed gridlines, kept
+  // visually distinct from the elevation axis's solid forest-green lines.
+  const yTicks2 = [];
+  for (let sv = minSlope; sv <= maxSlope + 0.001; sv += slopeStep){
+    yTicks2.push(sv);
+  }
+
+  let y2Svg = '';
+  yTicks2.forEach(function(sv){
+    const y = y2Pix(sv);
+    y2Svg += '<line x1="' + ELEV_MARGIN.left + '" y1="' + y.toFixed(1) + '" x2="' +
+      (ELEV_CHART_W - ELEV_MARGIN.right) + '" y2="' + y.toFixed(1) +
+      '" stroke="#7fb3e0" stroke-width="1" stroke-dasharray="3,3" opacity="0.65"/>';
+    y2Svg += '<text x="' + (ELEV_CHART_W - ELEV_MARGIN.right + 6) + '" y="' + (y + 4).toFixed(1) +
+      '" text-anchor="start" font-size="12" fill="#2f6a8f" font-family="monospace">' + Math.round(sv) + '</text>';
+  });
+  const pctUnitY = y2Pix(maxSlope) - 6;
+  y2Svg += '<text x="' + (ELEV_CHART_W - ELEV_MARGIN.right + 6) + '" y="' + pctUnitY.toFixed(1) +
+    '" text-anchor="start" font-size="12" fill="#2f6a8f" font-family="monospace" font-weight="bold">%</text>';
+
+  // Slope curve: cubic spline through the mid-distance points, plus a dot
+  // marker at each one.
+  let slopeSvg = '';
+  if (slopeProfile.length >= 1){
+    const slopePix = slopeProfile.map(function(p){ return [xPix(p.distKm), y2Pix(p.slope)]; });
+    if (slopePix.length >= 2){
+      const slopeD = catmullRomPath(slopePix);
+      slopeSvg += '<path d="' + slopeD + '" fill="none" stroke="#2f6a8f" stroke-width="2" stroke-dasharray="5,3"/>';
+    }
+    slopePix.forEach(function(pt){
+      slopeSvg += '<circle cx="' + pt[0].toFixed(1) + '" cy="' + pt[1].toFixed(1) + '" r="2.5" fill="#2f6a8f"/>';
+    });
+  }
+
+  // X-axis (distance): 0 at the origin, stepping to the rounded max --
+  // both ends land on round numbers, with "km" appended at the far end.
+  const xTicks = [];
+  for (let d = 0; d <= maxDist + 0.001; d += distStep){
+    xTicks.push(d);
+  }
+
+  let xLabelSvg = '';
+  xTicks.forEach(function(dv, i){
+    const x = xPix(dv);
+    const isLast = i === xTicks.length - 1;
+    const label = (distStep < 1 ? dv.toFixed(1) : Math.round(dv)) + (isLast ? ' km' : '');
+    xLabelSvg += '<text x="' + x.toFixed(1) + '" y="' + (ELEV_CHART_H - 6) + '" text-anchor="' +
+      (isLast ? 'end' : 'middle') + '" font-size="12" fill="#2f4a37" font-family="monospace"' +
+      (isLast ? ' font-weight="bold"' : '') + '>' + label + '</text>';
+  });
+
+  const svg =
+    '<svg viewBox="0 0 ' + ELEV_CHART_W + ' ' + ELEV_CHART_H + '" xmlns="http://www.w3.org/2000/svg">' +
+      gridSvg +
+      y2Svg +
+      '<path d="' + areaD + '" fill="#c1701e" fill-opacity="0.32" stroke="none"/>' +
+      '<path d="' + lineD + '" fill="none" stroke="#9c5714" stroke-width="2.2"/>' +
+      eleDotsSvg +
+      slopeSvg +
+      xLabelSvg +
+      '<line id="chart-hover-line" x1="0" y1="' + ELEV_MARGIN.top + '" x2="0" y2="' + baseline.toFixed(1) +
+        '" stroke="#d32f2f" stroke-width="1.5" opacity="0"/>' +
+    '</svg>';
+
+  wrap.innerHTML = svg;
+
+  chartScale = { xPix: xPix, yPix: yPix, top: ELEV_MARGIN.top, baseline: baseline };
+
+  wrap.querySelectorAll('.ele-dot').forEach(function(el){
+    el.addEventListener('mouseenter', function(){
+      showMapHoverArrow(parseInt(el.getAttribute('data-idx'), 10));
+    });
+    el.addEventListener('mouseleave', hideMapHoverArrow);
+  });
+}
+
+function updateStats(){
+  document.getElementById('stat-points').textContent = points.length;
+  const meters = totalDistanceMeters();
+  const km = meters / 1000;
+  const mi = meters / 1609.344;
+  document.getElementById('stat-dist').textContent = mi.toFixed(2) + ' mi / ' + km.toFixed(2) + ' km';
+
+  const withEle = points.filter(function(p){ return p.ele !== null; }).length;
+  const eleTxt = points.length === 0 ? 'not fetched' :
+    (withEle === points.length ? 'all fetched' : withEle + ' / ' + points.length + ' fetched');
+  document.getElementById('stat-ele').textContent = eleTxt;
+
+  document.getElementById('btn-undo').disabled = points.length === 0;
+  document.getElementById('btn-clear').disabled = points.length === 0;
+  document.getElementById('btn-elev').disabled = points.length === 0;
+  document.getElementById('btn-save').disabled = points.length < 2;
+
+  updateElevationChart();
+}
+
+function setStatus(msg, kind){
+  const bar = document.getElementById('status-bar');
+  bar.textContent = msg;
+  bar.className = kind || '';
+}
+
+// --- Elevation lookup ---
+// Primary: Open-Elevation (free, no key). Fallback: Open-Topo-Data SRTM90m.
+async function fetchElevations(){
+  if (points.length === 0) return;
+  setStatus('Fetching elevations for ' + points.length + ' point(s)...', '');
+
+  const locations = points.map(function(p){ return { latitude: p.lat, longitude: p.lon }; });
+
+  try {
+    const resp = await fetch('https://api.open-elevation.com/api/v1/lookup', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ locations: locations })
+    });
+    if (!resp.ok) throw new Error('open-elevation HTTP ' + resp.status);
+    const data = await resp.json();
+    data.results.forEach(function(r, i){
+      if (points[i]) points[i].ele = r.elevation;
+    });
+    renderPointList();
+    updateStats();
+    setStatus('Elevations fetched for all ' + points.length + ' point(s).', 'ok');
+    return true;
+  } catch (err) {
+    console.warn('Open-Elevation failed, trying fallback:', err);
+  }
+
+  try {
+    const locStr = points.map(function(p){ return p.lat.toFixed(6) + ',' + p.lon.toFixed(6); }).join('|');
+    const resp2 = await fetch('https://api.opentopodata.org/v1/srtm90m?locations=' + encodeURIComponent(locStr));
+    if (!resp2.ok) throw new Error('opentopodata HTTP ' + resp2.status);
+    const data2 = await resp2.json();
+    data2.results.forEach(function(r, i){
+      if (points[i]) points[i].ele = r.elevation;
+    });
+    renderPointList();
+    updateStats();
+    setStatus('Elevations fetched (fallback source) for all points.', 'ok');
+    return true;
+  } catch (err2) {
+    console.error('Both elevation sources failed:', err2);
+    setStatus('Elevation lookup failed (no reply from either source). You can still save the GPX without elevation.', 'error');
+    return false;
+  }
+}
+
+// --- GPX export ---
+function buildGpxXml(name){
+  const now = new Date().toISOString();
+  let xml = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n';
+  xml += '<gpx version="1.1" creator="GPX Trail Planner v1.17" xmlns="http://www.topografix.com/GPX/1/1" ';
+  xml += 'xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" ';
+  xml += 'xsi:schemaLocation="http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd">\n';
+  xml += '  <metadata>\n';
+  xml += '    <name>' + escapeXml(name) + '</name>\n';
+  xml += '    <time>' + now + '</time>\n';
+  xml += '  </metadata>\n';
+  xml += '  <trk>\n';
+  xml += '    <name>' + escapeXml(name) + '</name>\n';
+  xml += '    <trkseg>\n';
+  points.forEach(function(p){
+    xml += '      <trkpt lat="' + p.lat.toFixed(6) + '" lon="' + p.lon.toFixed(6) + '">\n';
+    if (p.ele !== null && p.ele !== undefined){
+      xml += '        <ele>' + Number(p.ele).toFixed(1) + '</ele>\n';
+    }
+    xml += '      </trkpt>\n';
+  });
+  xml += '    </trkseg>\n';
+  xml += '  </trk>\n';
+  xml += '</gpx>\n';
+  return xml;
+}
+
+function escapeXml(s){
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+                   .replace(/"/g,'&quot;').replace(/'/g,'&apos;');
+}
+
+function defaultTrackName(){
+  const d = new Date();
+  const pad = function(n){ return n < 10 ? '0'+n : n; };
+  return 'Trail_' + d.getFullYear() + pad(d.getMonth()+1) + pad(d.getDate()) + '_' + pad(d.getHours()) + pad(d.getMinutes());
+}
+
+async function saveGpx(){
+  if (points.length < 2){
+    setStatus('Need at least 2 points to save a track.', 'error');
+    return;
+  }
+  const nameInput = document.getElementById('track-name');
+  const name = nameInput.value.trim() || defaultTrackName();
+
+  const missingEle = points.some(function(p){ return p.ele === null; });
+  if (missingEle){
+    setStatus('Fetching elevation data before saving...', '');
+    await fetchElevations();
+  }
+
+  const xml = buildGpxXml(name);
+  const blob = new Blob([xml], { type: 'application/gpx+xml' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  const safeName = name.replace(/[^a-z0-9_\-]+/gi, '_');
+  a.href = url;
+  a.download = safeName + '.gpx';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  setStatus('Saved "' + safeName + '.gpx" (' + points.length + ' points).', 'ok');
+}
+
+// --- Search / jump to location (Nominatim) ---
+async function searchLocation(){
+  const q = document.getElementById('search-input').value.trim();
+  if (!q) return;
+  setStatus('Searching for "' + q + '"...', '');
+  try {
+    const resp = await fetch('https://nominatim.openstreetmap.org/search?format=json&limit=1&q=' + encodeURIComponent(q));
+    const data = await resp.json();
+    if (data.length === 0){
+      setStatus('No results found for "' + q + '".', 'error');
+      return;
+    }
+    const lat = parseFloat(data[0].lat);
+    const lon = parseFloat(data[0].lon);
+    map.setView([lat, lon], 14);
+    setStatus('Jumped to: ' + data[0].display_name, 'ok');
+  } catch (err) {
+    console.error(err);
+    setStatus('Search failed (network issue).', 'error');
+  }
+}
+
+// --- Wire up buttons ---
+window.addEventListener('DOMContentLoaded', function(){
+  initMap();
+  document.getElementById('track-name').value = defaultTrackName();
+
+  document.getElementById('btn-undo').addEventListener('click', function(){
+    if (points.length > 0) removePoint(points.length - 1);
+  });
+  document.getElementById('btn-clear').addEventListener('click', function(){
+    if (points.length === 0) return;
+    if (!confirm('Clear all ' + points.length + ' points?')) return;
+    points.slice().forEach(function(p){ map.removeLayer(p.marker); });
+    points.length = 0;
+    redrawLine();
+    renderPointList();
+    updateStats();
+    setStatus('All points cleared.', 'ok');
+  });
+  document.getElementById('btn-elev').addEventListener('click', fetchElevations);
+  document.getElementById('btn-save').addEventListener('click', saveGpx);
+  document.getElementById('search-btn').addEventListener('click', searchLocation);
+  document.getElementById('search-input').addEventListener('keydown', function(e){
+    if (e.key === 'Enter') searchLocation();
+  });
+  document.getElementById('chart-opacity-toggle').addEventListener('click', function(){
+    const panel = document.getElementById('elev-chart-panel');
+    const isOn = panel.classList.toggle('chart-opaque');
+    this.classList.toggle('on', isOn);
+  });
+
+  updateStats();
+});
+</script>
+</body>
+</html>
