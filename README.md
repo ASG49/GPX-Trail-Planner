@@ -7,7 +7,7 @@ any modern browser) — open the app file locally or via GitHub Pages.
 
 **Live app:** https://asg49.github.io/GPX-Trail-Planner/
 
-**Current version: v1.20**
+**Current version: v1.23**
 
 ## Features
 
@@ -34,7 +34,8 @@ any modern browser) — open the app file locally or via GitHub Pages.
 - **Center on my location** — a round button under the zoom control
   centers the map on the browser's current geolocation; the map also
   tries to do this automatically on load.
-- **Live stats** — running point count and total distance (mi/km).
+- **Live stats** — running point count, total distance, and altitude-fetch
+  progress.
 - **Altitude vs. distance profile** — a semi-transparent chart overlay,
   bottom-right of the map, rendered as inline SVG (no chart library):
   - Cubic-spline (Catmull-Rom) curves for both series, so the lines pass
@@ -53,6 +54,14 @@ any modern browser) — open the app file locally or via GitHub Pages.
     background for reading over visually busy map areas.
 - **Save as GPX** — exports a standard GPX 1.1 file (`<trk>`/`<trkseg>`
   with lat/lon/ele per point), named from the "Track name" field.
+- **Mobile-optimized layout** (phone-width screens only — desktop is
+  unaffected): the control panel becomes a compact floating strip
+  anchored top-left, roughly 40% of the screen width, with the map
+  filling the entire screen behind it. The panel itself stops right after
+  the live stats; everything else (slope-smoothing setting, action
+  buttons, points list) lives behind a drag-handle drawer you tap or pull
+  down to reveal, so the map stays maximally visible until you actually
+  need those controls.
 
 ## Usage
 
@@ -65,6 +74,10 @@ any modern browser) — open the app file locally or via GitHub Pages.
 5. Watch the elevation/slope profile build up automatically in the
    bottom-right corner; adjust the slope-smoothing minimum if needed.
 6. Set a track name and click **Save GPX File** to download.
+
+On a phone, tap or drag the small handle bar below the stats to reveal
+the rest of the controls (they're hidden by default to keep the map
+visible).
 
 ## Data sources
 
@@ -79,8 +92,13 @@ any modern browser) — open the app file locally or via GitHub Pages.
 - This is a personal utility, deployed as a static single HTML file — no
   build process, package manager, or server required.
 - `index.html` is a small redirect to the current versioned app file
-  (e.g. `GPX-Trail-Planner_v1.20.html`); update that redirect target when
+  (e.g. `GPX-Trail-Planner_v1.23.html`); update that redirect target when
   uploading a new version rather than replacing `index.html` itself.
 - Map tiles and elevation/geocoding APIs are called directly from the
   browser at runtime, so an internet connection is required while using
   the app (not just while downloading it).
+- Elevation values come from raw SRTM data (~90m grid resolution), which
+  can disagree by 10-20m from what a smoothed map contour line implies at
+  the same spot, and can produce noisy slope readings on closely-spaced
+  points — the adjustable slope-smoothing minimum exists specifically to
+  reduce that effect.
