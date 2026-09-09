@@ -7,7 +7,7 @@ any modern browser) — open the app file locally or via GitHub Pages.
 
 **Live app:** https://asg49.github.io/GPX-Trail-Planner/
 
-**Current version: v1.23**
+**Current version: v1.24**
 
 ## Features
 
