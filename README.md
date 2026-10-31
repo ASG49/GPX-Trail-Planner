@@ -7,7 +7,7 @@ any modern browser) — open the app file locally or via GitHub Pages.
 
 **Live app:** https://asg49.github.io/GPX-Trail-Planner/
 
-**Current version: v1.24**
+**Current version: v1.29**
 
 ## Features
 
@@ -18,7 +18,7 @@ any modern browser) — open the app file locally or via GitHub Pages.
   between two existing ones.
 - **Drag to fine-tune** — drag any point marker to reposition it.
 - **Automatic altitude** — every new point's elevation is looked up in the
-  background (Open-Elevation, falling back to Open-Topo-Data's SRTM90m)
+  background (Open-Elevation, falling back to Open-Meteo, then Open-Topo-Data SRTM90m, Mapzen, ASTER30m)
   and filled in as soon as it resolves. A manual "Fetch Elevations" button
   is also available for re-fetching after a drag.
 - **Load GPX File** — re-import a track previously saved by this app.
@@ -83,7 +83,7 @@ visible).
 
 - Map tiles: [OpenTopoMap](https://opentopomap.org) / [OpenStreetMap](https://www.openstreetmap.org) / Google
 - Elevation: [Open-Elevation](https://open-elevation.com) (primary),
-  [Open-Topo-Data](https://www.opentopodata.org) SRTM90m (fallback)
+  [Open-Topo-Data](https://www.opentopodata.org) SRTM90m, Mapzen and ASTER30m (fallbacks; SRTM sources are used only south of ~60°N, so places like Iceland use Mapzen/ASTER)
 - Geocoding: [Nominatim](https://nominatim.org)
 - Mapping library: [Leaflet](https://leafletjs.com)
 
@@ -92,7 +92,7 @@ visible).
 - This is a personal utility, deployed as a static single HTML file — no
   build process, package manager, or server required.
 - `index.html` is a small redirect to the current versioned app file
-  (e.g. `GPX-Trail-Planner_v1.23.html`); update that redirect target when
+  (e.g. `GPX-Trail-Planner_v1.29.html`); update that redirect target when
   uploading a new version rather than replacing `index.html` itself.
 - Map tiles and elevation/geocoding APIs are called directly from the
   browser at runtime, so an internet connection is required while using
